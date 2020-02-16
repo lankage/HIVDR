@@ -1,8 +1,3 @@
-"""
-A simple script to initial a request to Sierra GraphQL service and
-then print out current HIVDB version.
-"""
-from __future__ import print_function
 import json
 import requests
 import re
@@ -71,10 +66,7 @@ def makeRequest(mutations):
           'Content-Type': 'application/json'
       }
   )
-  #print(mutations)
   return resp
-  #return resp.json()['data']['viewer']['mutationsAnalysis']['drugResistance']
-#print(resp.json()['data']['viewer']['mutationsAnalysis']['drugResistance'])
 
 # convert the called mutations into the mutation string for API query
 def apiMutationString(row):
@@ -94,13 +86,19 @@ def apiMutationString(row):
 
 def unpackResponse(json):
   for gene in json:
+    print()
     print(gene['gene']['name'])
     for drugDef in gene['drugScores']:
       drugClass = drugDef['drugClass']['name']
       drugName = drugDef['drug']['name']
       score = drugDef['score']
       text = drugDef['text']
-      print(drugClass, drugName, score, text, sep="\t")
+      #print(drugDef)
+      print(drugClass, drugName, score, text, sep="\t", end="\t")
+      print("(", end="")
+      for score in drugDef['partialScores']:
+        print(score['mutations'][0]['text'], ':', score['score'], sep=" ", end=" ")
+      print(")")
 
 mutationsDict = {}
 
@@ -121,12 +119,10 @@ errorBarcodes = []
 
 for barcode in mutationsDict:
   print(barcode)
-  #print(len(mutationsDict[barcode]))
   print()
   if len(mutationsDict[barcode]) > 0:
     response = makeRequest(mutationsDict[barcode])
     if response.status_code == 200:
-      #print(response)
       output = unpackResponse(response.json()['data']['viewer']['mutationsAnalysis']['drugResistance'])
       print(output)
     else:
@@ -141,10 +137,4 @@ print()
 print("barcodes with errors:")
 for barcode in errorBarcodes:
   print(barcode)
-# TODO
-# handle single called mutations file, break out into data structure of samples
-# run loop and call makeRequest with a sleep to prevent hammering api
-
-
-
 
