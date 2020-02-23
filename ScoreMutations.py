@@ -97,7 +97,7 @@ def unpackResponse(json):
       print(drugClass, drugName, score, text, sep="\t", end="\t")
       print("(", end="")
       for score in drugDef['partialScores']:
-        print(score['mutations'][0]['text'], ':', score['score'], sep=" ", end=" ")
+        print(score['mutations'][0]['text'], ':', score['score'], sep="", end=",")
       print(")")
 
 mutationsDict = {}
@@ -108,7 +108,7 @@ with open('one_sample.txt', 'r') as mutationsFile:
   for line in mutationsFile:
     lineparts = line.split()
     mutString = apiMutationString(lineparts)
-    print(mutString)
+    #print(mutString)
     barcode = lineparts[0]
     if not barcode in mutationsDict:
       mutationsDict[barcode] = [mutString]
