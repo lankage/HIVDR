@@ -2,6 +2,11 @@ import json
 import requests
 import re
 import time
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-file", help="Specify a drug resistance called mutations file", type=str)
+args = parser.parse_args()
 
 geneClassDict = {}
 
@@ -95,16 +100,18 @@ def unpackResponse(json):
       text = drugDef['text']
       #print(drugDef)
       print(drugClass, drugName, score, text, sep="\t", end="\t")
-      print("(", end="")
+      if len(drugDef['partialScores']) > 0:
+        print("(", end="")
       for score in drugDef['partialScores']:
         print(score['mutations'][0]['text'], ':', score['score'], sep="", end=",")
-      print(")")
+      if len(drugDef['partialScores']) > 0:
+        print(")")
+      else:
+        print()
 
 mutationsDict = {}
 
-#with open('called_mutations.txt', 'r') as mutationsFile:
-with open('one_sample.txt', 'r') as mutationsFile:
-#with open('bad_sample.txt', 'r') as mutationsFile:
+with open(args.file, 'r') as mutationsFile:
   for line in mutationsFile:
     lineparts = line.split()
     mutString = apiMutationString(lineparts)
@@ -118,7 +125,7 @@ with open('one_sample.txt', 'r') as mutationsFile:
 errorBarcodes = []
 
 for barcode in mutationsDict:
-  print(barcode)
+  print('barcode:', barcode, sep="\t")
   print()
   if len(mutationsDict[barcode]) > 0:
     response = makeRequest(mutationsDict[barcode])
