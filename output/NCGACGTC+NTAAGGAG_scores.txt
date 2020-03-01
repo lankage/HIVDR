@@ -1,0 +1,13 @@
+barcode: NCGACGTC+NTAAGGAG
+
+PR
+PI  ATV   0.0   Susceptible  
+PI  DRV   0.0   Susceptible  
+PI  FPV   0.0   Susceptible  
+PI  IDV   0.0   Susceptible  
+PI  LPV   0.0   Susceptible  
+PI  NFV   0.0   Susceptible  
+PI  SQV   0.0   Susceptible  
+PI  TPV   0.0   Susceptible  
+
+barcodes with errors:

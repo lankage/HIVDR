@@ -1,0 +1,17 @@
+barcode: TGCAGCTA+ACTGCATA
+
+RT
+NRTI  ABC   0.0   Susceptible  
+NRTI  AZT   0.0   Susceptible  
+NRTI  D4T   0.0   Susceptible  
+NRTI  DDI   0.0   Susceptible  
+NRTI  FTC   0.0   Susceptible  
+NRTI  LMV   0.0   Susceptible  
+NRTI  TDF   0.0   Susceptible  
+NNRTI  DOR   0.0   Susceptible  
+NNRTI  EFV   60.0   High-Level Resistance  (K103N:60.0,)
+NNRTI  ETR   0.0   Susceptible  
+NNRTI  NVP   60.0   High-Level Resistance  (K103N:60.0,)
+NNRTI  RPV   0.0   Susceptible  
+
+barcodes with errors:

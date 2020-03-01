@@ -2,6 +2,7 @@ import json
 import requests
 import re
 import time
+import sys
 import argparse
 
 parser = argparse.ArgumentParser()
@@ -90,24 +91,30 @@ def apiMutationString(row):
   return mutationString
 
 def unpackResponse(json):
+  outputLines = []
   for gene in json:
-    print()
-    print(gene['gene']['name'])
+    outputLines.append("\n")
+    outputLines.append(gene['gene']['name'] + "\n")
     for drugDef in gene['drugScores']:
       drugClass = drugDef['drugClass']['name']
       drugName = drugDef['drug']['name']
       score = drugDef['score']
       text = drugDef['text']
-      #print(drugDef)
-      print(drugClass, drugName, score, text, sep="\t", end="\t")
+
+      outputLines.append(drugClass + "  " + drugName + "   " + str(score) + "   " + text + "  ")
       if len(drugDef['partialScores']) > 0:
-        print("(", end="")
+        #print("(", end="")
+        outputLines.append("(")
       for score in drugDef['partialScores']:
-        print(score['mutations'][0]['text'], ':', score['score'], sep="", end=",")
+        outputLines.append(score['mutations'][0]['text'] + ':' + str(score['score']) + ",")
+        #print(score['mutations'][0]['text'], ':', score['score'], sep="", end=",")
       if len(drugDef['partialScores']) > 0:
-        print(")")
+        outputLines.append(")\n")
+        #print(")")
       else:
-        print()
+        outputLines.append("\n")
+        #print()
+  return "".join(outputLines)
 
 mutationsDict = {}
 
@@ -125,23 +132,24 @@ with open(args.file, 'r') as mutationsFile:
 errorBarcodes = []
 
 for barcode in mutationsDict:
-  print('barcode:', barcode, sep="\t")
-  print()
-  if len(mutationsDict[barcode]) > 0:
-    response = makeRequest(mutationsDict[barcode])
-    if response.status_code == 200:
-      output = unpackResponse(response.json()['data']['viewer']['mutationsAnalysis']['drugResistance'])
-      print(output)
+  with open('output/' + barcode + '_scores.txt', 'w') as outfile:
+    outfile.write('barcode: ' + barcode)
+    outfile.write("\n")
+    if len(mutationsDict[barcode]) > 0:
+      response = makeRequest(mutationsDict[barcode])
+      if response.status_code == 200:
+        output = unpackResponse(response.json()['data']['viewer']['mutationsAnalysis']['drugResistance'])
+        outfile.write(output)
+      else:
+        outfile.write("Error with query!")
+        errorBarcodes.append(barcode)
     else:
-      print("Error with query!")
-      errorBarcodes.append(barcode)
-  else:
-    print("No mutations called for barcode")
-  time.sleep(2)
+      outfile.write("No mutations called for barcode")
+    time.sleep(2)
 
-print()
-print()
-print("barcodes with errors:")
-for barcode in errorBarcodes:
-  print(barcode)
+    outfile.write("\n")
+    outfile.write("barcodes with errors:")
+    for barcode in errorBarcodes:
+      outfile.write(barcode)
+  sys.stderr.write("barcode " + barcode + " scored\n")
 

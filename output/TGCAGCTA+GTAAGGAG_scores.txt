@@ -1,0 +1,27 @@
+barcode: TGCAGCTA+GTAAGGAG
+
+PR
+PI  ATV   0.0   Susceptible  
+PI  DRV   0.0   Susceptible  
+PI  FPV   0.0   Susceptible  
+PI  IDV   0.0   Susceptible  
+PI  LPV   0.0   Susceptible  
+PI  NFV   0.0   Susceptible  
+PI  SQV   0.0   Susceptible  
+PI  TPV   0.0   Susceptible  
+
+RT
+NRTI  ABC   0.0   Susceptible  
+NRTI  AZT   0.0   Susceptible  
+NRTI  D4T   0.0   Susceptible  
+NRTI  DDI   0.0   Susceptible  
+NRTI  FTC   0.0   Susceptible  
+NRTI  LMV   0.0   Susceptible  
+NRTI  TDF   0.0   Susceptible  
+NNRTI  DOR   15.0   Low-Level Resistance  (K101E:15.0,)
+NNRTI  EFV   75.0   High-Level Resistance  (K101E:15.0,K103N:60.0,)
+NNRTI  ETR   15.0   Low-Level Resistance  (K101E:15.0,)
+NNRTI  NVP   90.0   High-Level Resistance  (K101E:30.0,K103N:60.0,)
+NNRTI  RPV   45.0   Intermediate Resistance  (K101E:45.0,)
+
+barcodes with errors:

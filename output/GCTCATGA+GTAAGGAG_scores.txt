@@ -1,0 +1,27 @@
+barcode: GCTCATGA+GTAAGGAG
+
+PR
+PI  ATV   5.0   Susceptible  (L33F:5.0,)
+PI  DRV   5.0   Susceptible  (L33F:5.0,)
+PI  FPV   10.0   Potential Low-Level Resistance  (L33F:10.0,)
+PI  IDV   5.0   Susceptible  (L33F:5.0,)
+PI  LPV   5.0   Susceptible  (L33F:5.0,)
+PI  NFV   10.0   Potential Low-Level Resistance  (L33F:10.0,)
+PI  SQV   5.0   Susceptible  (L33F:5.0,)
+PI  TPV   10.0   Potential Low-Level Resistance  (L33F:10.0,)
+
+RT
+NRTI  ABC   60.0   High-Level Resistance  (M184V:15.0,K219Q:5.0,D67N:5.0,D67N:20.0,D67N:10.0,K70R:5.0,)
+NRTI  AZT   55.0   Intermediate Resistance  (M184V:-10.0,K219Q:10.0,D67N:15.0,D67N:10.0,K70R:30.0,)
+NRTI  D4T   40.0   Intermediate Resistance  (M184V:-10.0,K219Q:10.0,D67N:15.0,D67N:10.0,K70R:15.0,)
+NRTI  DDI   40.0   Intermediate Resistance  (M184V:10.0,K219Q:5.0,D67N:5.0,D67N:10.0,K70R:10.0,)
+NRTI  FTC   70.0   High-Level Resistance  (M184V:60.0,D67N:10.0,)
+NRTI  LMV   70.0   High-Level Resistance  (M184V:60.0,D67N:10.0,)
+NRTI  TDF   15.0   Low-Level Resistance  (M184V:-10.0,K219Q:5.0,D67N:5.0,D67N:10.0,K70R:5.0,)
+NNRTI  DOR   35.0   Intermediate Resistance  (K101E:15.0,K101E:5.0,V108I:15.0,)
+NNRTI  EFV   110.0   High-Level Resistance  (K101E:15.0,V108I:10.0,E138Q:10.0,G190A:45.0,K238NT:30.0,)
+NNRTI  ETR   40.0   Intermediate Resistance  (K101E:15.0,K101E:5.0,E138Q:10.0,G190A:10.0,)
+NNRTI  NVP   145.0   High-Level Resistance  (K101E:30.0,V108I:15.0,E138Q:10.0,G190A:60.0,K238NT:30.0,)
+NNRTI  RPV   75.0   High-Level Resistance  (K101E:45.0,E138Q:15.0,G190A:15.0,)
+
+barcodes with errors:

@@ -66,6 +66,8 @@ class ReportGenerator():
     pdf = FPDF(orientation='P', unit='mm', format='A4')
     pdf.add_page()
     pdf.set_font("Arial", size=12)
+    pdf.image('CFAR-logo.jpg', x = 5, y = 5, h = 36, w = 30)
+    pdf.image('jcrc_logo-1.jpg', x = 170, y = 5, h = 36, w = 30)
     pdf.cell(200, 10, txt="GENOTYPIC HIV-1 RESISTANCE PROFILE", ln=1, align="C")
     pdf.cell(200, 10, txt=self.reportTitle, ln=1, align="C")
     pdf.set_font("Arial", size=10)
@@ -155,10 +157,10 @@ class ReportGenerator():
       pdf.cell(50, 5, txt=drugName)
       pdf.cell(50, 5, txt=res, ln=1)
     pdf.cell(10, 10, txt="", ln=1)
-    pdf.output(self.barcode + ".pdf")
+    pdf.output("pdfs/" + self.barcode + ".pdf")
 
 if __name__ == "__main__":
-  reporter = ReportGenerator('SAMPLE1', 'one_profile.txt')
+  reporter = ReportGenerator('SAMPLE1', 'output/CGAGGCTG+TCTCTCCG_scores.txt')
   reporter.parseFile(reporter.profileFile)
   reporter.generateReport()
   #print(reporter.profile)

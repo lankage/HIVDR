@@ -1,0 +1,27 @@
+barcode: TACGCTGC+GTAAGGAG
+
+PR
+PI  ATV   5.0   Susceptible  (L33F:5.0,)
+PI  DRV   5.0   Susceptible  (L33F:5.0,)
+PI  FPV   10.0   Potential Low-Level Resistance  (L33F:10.0,)
+PI  IDV   5.0   Susceptible  (L33F:5.0,)
+PI  LPV   5.0   Susceptible  (L33F:5.0,)
+PI  NFV   10.0   Potential Low-Level Resistance  (L33F:10.0,)
+PI  SQV   5.0   Susceptible  (L33F:5.0,)
+PI  TPV   10.0   Potential Low-Level Resistance  (L33F:10.0,)
+
+RT
+NRTI  ABC   15.0   Low-Level Resistance  (M184I:15.0,)
+NRTI  AZT   -10.0   Susceptible  (M184I:-10.0,)
+NRTI  D4T   -10.0   Susceptible  (M184I:-10.0,)
+NRTI  DDI   10.0   Potential Low-Level Resistance  (M184I:10.0,)
+NRTI  FTC   60.0   High-Level Resistance  (M184I:60.0,)
+NRTI  LMV   60.0   High-Level Resistance  (M184I:60.0,)
+NRTI  TDF   -10.0   Susceptible  (M184I:-10.0,)
+NNRTI  DOR   10.0   Potential Low-Level Resistance  (Y181C:10.0,)
+NNRTI  EFV   30.0   Intermediate Resistance  (Y181C:30.0,)
+NNRTI  ETR   30.0   Intermediate Resistance  (Y181C:30.0,)
+NNRTI  NVP   60.0   High-Level Resistance  (Y181C:60.0,)
+NNRTI  RPV   45.0   Intermediate Resistance  (Y181C:45.0,)
+
+barcodes with errors:

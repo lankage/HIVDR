@@ -1,0 +1,27 @@
+barcode: CTCTCTAC+TCTCTCCG
+
+PR
+PI  ATV   0.0   Susceptible  
+PI  DRV   0.0   Susceptible  
+PI  FPV   0.0   Susceptible  
+PI  IDV   0.0   Susceptible  
+PI  LPV   0.0   Susceptible  
+PI  NFV   0.0   Susceptible  
+PI  SQV   0.0   Susceptible  
+PI  TPV   0.0   Susceptible  
+
+RT
+NRTI  ABC   60.0   High-Level Resistance  (T69Insertion:60.0,)
+NRTI  AZT   60.0   High-Level Resistance  (T69Insertion:60.0,)
+NRTI  D4T   60.0   High-Level Resistance  (T69Insertion:60.0,)
+NRTI  DDI   60.0   High-Level Resistance  (T69Insertion:60.0,)
+NRTI  FTC   30.0   Intermediate Resistance  (T69Insertion:30.0,)
+NRTI  LMV   30.0   Intermediate Resistance  (T69Insertion:30.0,)
+NRTI  TDF   60.0   High-Level Resistance  (T69Insertion:60.0,)
+NNRTI  DOR   0.0   Susceptible  
+NNRTI  EFV   0.0   Susceptible  
+NNRTI  ETR   0.0   Susceptible  
+NNRTI  NVP   0.0   Susceptible  
+NNRTI  RPV   0.0   Susceptible  
+
+barcodes with errors:
