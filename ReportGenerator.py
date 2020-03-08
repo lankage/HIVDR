@@ -8,6 +8,7 @@ import re
 import sys
 import argparse
 from fpdf import FPDF
+import xlsxwriter
 
 
 class ReportGenerator():
@@ -62,7 +63,7 @@ class ReportGenerator():
       drugName = drugAbbrv
     return drugName
 
-  def generateReport(self):
+  def generatePDFReport(self):
     pdf = FPDF(orientation='P', unit='mm', format='A4')
     pdf.add_page()
     pdf.set_font("Arial", size=12)
@@ -159,10 +160,106 @@ class ReportGenerator():
     pdf.cell(10, 10, txt="", ln=1)
     pdf.output("pdfs/" + self.barcode + ".pdf")
 
+  def generateExcelReport(self):
+    workbook = xlsxwriter.Workbook('demo.xlsx')
+    worksheet = workbook.add_worksheet()
+    bold = workbook.add_format({'bold': True})
+    brand_header = workbook.add_format({'font_color': 'blue', 'bold': True})
+    report = workbook.add_format({'font_color': 'red', 'bold': True})
+    metadata_header = workbook.add_format({'bg_color': '#F1C096', 'bold': True})
+    green = workbook.add_format({'bg_color': 'green'})
+    gray = workbook.add_format({'bg_color': 'gray'})
+    main_table_header = workbook.add_format({'bg_color': '#000000', 'font_color': '#FFFFFF',
+                                             'bold': True, 'center_across': True})
+    psub_header = workbook.add_format({'font_color': 'purple', 'center_across': True, 'font_size': 8})
+    # set columns widths
+    worksheet.set_column('A:A', 11 * 0.1317)  # pixels to *width* unitss
+    worksheet.set_column('B:B', 4)
+    worksheet.set_column('C:C', 10.83)
+    worksheet.set_column('D:D', 9.33)
+    worksheet.set_column('E:E', 1)
+    worksheet.set_column('F:F', 24.5)
+    worksheet.set_column('G:G', 5 * 0.1317)
+    worksheet.set_column('H:H', 12.5)
+    worksheet.set_column('I:I', 9.17)
+    worksheet.set_column('J:J', 54 * 0.1317)
+    worksheet.set_column('K:K', 8.5)
+    worksheet.set_column('L:L', 5 * 0.1317)
+    worksheet.set_column('M:M', 54 * 0.1317)
+    worksheet.set_column('N:N', 88 * 0.1317)
+
+
+    worksheet.write('A1', 'JOINT CLINICAL RESEARCH CENTER', brand_header)
+    worksheet.write('A2', 'CWRU/CFAR LABORATORY', brand_header)
+    worksheet.write('A4', 'HIV-1 DRUG RESISTANCE REPORT', report)
+    worksheet.write_row("A6:I6", ['Patient / Sample Information','','','','','','','',''], metadata_header)
+    #worksheet.write('A6', 'Patient / Sample Information', bold)
+    worksheet.write('A7', 'MRN:', bold)
+    worksheet.write('A8', 'Name:', bold)
+    worksheet.write('A9', 'DOB:', bold)
+    worksheet.write('A10', 'Gender:', bold)
+    worksheet.write('H7', 'Sample ID:', bold)
+    worksheet.write('H8', 'Lab ID:', bold)
+    worksheet.write('H9', 'Date Collected:', bold)
+    worksheet.write('H10', 'Date Received:', bold)
+    worksheet.write('H11', 'Date Reported:', bold)
+    worksheet.write_row("K6:N6", ['Physician / Project Information','','',''], metadata_header)
+    worksheet.write('K7', 'Name:', bold)
+    worksheet.write('K8', 'Institution:', bold)
+    worksheet.write('K9', 'Address:', bold)
+    worksheet.write_row("A13:F13", ['Subtyping information','','','','',''], metadata_header)
+    worksheet.write_row("I13:N13", ['Codons Analyzed','','','','',''], metadata_header)
+    ## MAIN TABLE
+    worksheet.write_row("B19:D19", ['ANTIRETROVIRAL DRUG','',''], main_table_header)
+    worksheet.write('F19', 'RESISTANCE INTERPRETATION *', main_table_header)
+    worksheet.write_row("H19:N19", ['DRUG RESISTANCE ASSOCIATED MUTATIONS','','','','','',''], main_table_header)
+    worksheet.write('C20', 'Generic Name', psub_header)
+    worksheet.write('D20', 'Brand Name', psub_header)
+    worksheet.write('F20', 'Assessment', psub_header)
+    worksheet.write_row("H20:K20", ['MUTATIONS DETECTED AT ≥ 20%','','',''], psub_header)
+    worksheet.write_row("M20:N20", ['MUTATIONS DETECTED AT < 20%',''], psub_header)
+    rowNum = 21
+    for resistance in self.profile['reverse_transcriptase']:
+      drugAbbrv = resistance[1]
+      if resistance[0] == "NRTI":
+        drugName = ""
+        if drugAbbrv in self.drugDict:
+          drugName = self.drugDict[drugAbbrv]
+        else:
+          drugName = drugAbbrv
+        res = ""
+        if resistance[3] == "Susceptible":
+          res = resistance[3]
+        else:
+          res = resistance[3] + " " + resistance[4]
+        worksheet.write('A' + str(rowNum), '', green)
+        if rowNum % 2 == 0:
+           worksheet.write('B' + str(rowNum), drugAbbrv)
+           worksheet.write('C' + str(rowNum), drugName)
+           worksheet.write('F' + str(rowNum), res)
+        else:
+          worksheet.write('B' + str(rowNum), drugAbbrv, gray)
+          worksheet.write('C' + str(rowNum), drugName, gray)
+          worksheet.write('F' + str(rowNum), res, gray)
+      rowNum += 1
+
+
+
+
+    workbook.close()
+
+
+
+
+
+
+
+
 if __name__ == "__main__":
   reporter = ReportGenerator('SAMPLE1', 'output/CGAGGCTG+TCTCTCCG_scores.txt')
   reporter.parseFile(reporter.profileFile)
-  reporter.generateReport()
+  #reporter.generatePDFReport()
+  reporter.generateExcelReport()
   #print(reporter.profile)
 
 
