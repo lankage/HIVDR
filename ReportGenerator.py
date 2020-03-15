@@ -24,20 +24,37 @@ class ReportGenerator():
     }
     self.barcode = ""
     self.profileFile = profileFile
-    self.drugDict = {'3TC': 'lamivudine', 'ABC': 'abacavir', 'APV': 'amprenavir',
-                     'ATV': 'atazanavir', 'BIC': 'bictegravir', 'COBI': 'cobicistat',
-                     'd4T': 'stavudine', 'ddI': 'didanosine','DLV': 'delavirdine',
-                     'DOR': 'doravirine', 'DRV': 'darunavir', 'DTG': 'dolutegravir',
-                     'EFV': 'efavirenz', 'ETR': 'etravirine', 'EVG': 'elvitegravir',
-                     'FPV': 'fosamprenavir', 'FTC': 'emtricitabine', 'IBA': 'ibalizumab',
-                     'IDV': 'indinavir', 'LPV': 'lopinavir', 'MVC': 'maraviroc',
-                     'NFV': 'nelfinavir', 'NVP': 'nevirapine', 'RAL': 'raltegravir',
-                     'RPV': 'rilpivirine', 'RTV': 'ritonavir ', 'SQV': 'saquinavir',
-                     'T20': 'enfuvirtide', 'TAF': 'tenofovir alafenamide',
-                     'TDF': 'tenofovir disoproxil fumarate', 'TPV': 'tipranavir',
-                     'ZDV': 'zidovudine', 'D4T': 'stavudine', 'AZT': 'zidovudine',
-                     'DDI': 'didanosine', 'LMV': 'lamivudine'
-    }
+    self.brandDict = {'ABC': "Ziagenu\u00AE", 'ddI': "Videx\u00AE", 'FTC': "Emtriva\u00AE",
+                      '3TC': "Epivir\u00AE", 'd4T': "Zerit\u00AE", 'AZT': "Retrovir\u00AE",
+                      'TDF': "Viread\u00AE", 'EFV': "Sustiva\u00AE", 'ETR': "Intelence\u00AE", 'NVP': "Viramune\u00AE", 'RPV': "Edurant\u00AE",
+                      'ATV': "Reyataz\u00AE", 'FPV': "Lexiva\u00AE", 'DRV': "Prezista\u00AE",
+                      'IDV': "Crixivan\u00AE", 'LPV': "Kaletra\u00AE", 'NFV': "Viracept\u00AE", 'SQV': "Invirase\u00AE", 'TPV': "Aptivus\u00AE",
+                      'RAL': "Isentress\u00AE", 'DTG': "Tivicay\u00AE",
+                      'DDI': "Videx\u00AE", 'D4T': "Zerit\u00AE", 'LMV': "Epivir\u00AE",
+                      'DOR': "Pifeltro\u00AE"}
+    self.drugDict = {'3TC': 'Lamivudine', 'ABC': 'Abacavir', 'APV': 'Amprenavir',
+                     'ATV': 'Atazanavir', 'BIC': 'Bictegravir', 'COBI': 'Cobicistat',
+                     'd4T': 'Stavudine', 'ddI': 'Didanosine','DLV': 'Delavirdine',
+                     'DOR': 'Doravirine', 'DRV': 'Darunavir', 'DTG': 'Dolutegravir',
+                     'EFV': 'Efavirenz', 'ETR': 'Etravirine', 'EVG': 'Elvitegravir',
+                     'FPV': 'Fosamprenavir', 'FTC': 'Emtricitabine', 'IBA': 'Ibalizumab',
+                     'IDV': 'Indinavir', 'LPV': 'Lopinavir', 'MVC': 'Maraviroc',
+                     'NFV': 'Nelfinavir', 'NVP': 'Nevirapine', 'RAL': 'Raltegravir',
+                     'RPV': 'Rilpivirine', 'RTV': 'Ritonavir ', 'SQV': 'Saquinavir',
+                     'T20': 'Enfuvirtide', 'TAF': 'Tenofovir alafenamide',
+                     'TDF': 'Tenofovir disoproxil fumarate', 'TPV': 'Tipranavir',
+                     'ZDV': 'Zidovudine', 'D4T': 'Stavudine', 'AZT': 'Zidovudine',
+                     'DDI': 'Didanosine', 'LMV': 'Lamivudine'}
+
+    self.fixed = { 'NRTI': {'ABC': 'Abacavir', 'DDI': 'Didanosine','ddI': 'Didanosine',
+                  'FTC': 'Emtricitabine', '3TC': 'Lamivudine', 'D4T': 'Stavudine', 'LMV': 'Lamivudine',
+                  'd4T': 'Stavudine', 'AZT': 'Zidovudine', 'TDF':'Tenofovir disoproxil fumarate'},
+                  'NNRTI': {'EFV': 'Efavirenz', 'ETR': 'Etravirine', 'NVP': 'Nevirapine',
+                            'RPV': 'Rilpivirine'},
+                  'PI': {'ATV': 'Atazanavir', 'FPV': 'Fosamprenavir', 'DRV': 'Darunavir',
+                     'IDV': 'Indinavir', 'LPV': 'Lopinavir', 'NFV': 'Nelfinavir',
+                     'SQV': 'Saquinavir', 'TPV': 'Tipranavir'},
+                  'IN': {'RAL': 'Raltegravir', 'EVG': 'Elvitegravir', 'DTG': 'Dolutegravir'} }
 
   def parseFile(self, filename):
     with open(filename, 'r') as infile:
@@ -167,26 +184,28 @@ class ReportGenerator():
     brand_header = workbook.add_format({'font_color': 'blue', 'bold': True})
     report = workbook.add_format({'font_color': 'red', 'bold': True})
     metadata_header = workbook.add_format({'bg_color': '#F1C096', 'bold': True})
-    green = workbook.add_format({'bg_color': 'green'})
-    gray = workbook.add_format({'bg_color': 'gray'})
+    green = workbook.add_format({'bg_color': '#397d22', 'font_color': '#FFFFFF'})
+    grey = workbook.add_format({'bg_color': '#c9d2d6'})
+    blue = workbook.add_format({'bg_color': '#2e0cb3', 'font_color': '#FFFFFF'})
+    red = workbook.add_format({'bg_color': '#8f1507', 'font_color': '#FFFFFF'})
     main_table_header = workbook.add_format({'bg_color': '#000000', 'font_color': '#FFFFFF',
                                              'bold': True, 'center_across': True})
     psub_header = workbook.add_format({'font_color': 'purple', 'center_across': True, 'font_size': 8})
     # set columns widths
-    worksheet.set_column('A:A', 11 * 0.1317)  # pixels to *width* unitss
+    worksheet.set_column('A:A', 6.17)  # pixels to *width* unitss
     worksheet.set_column('B:B', 4)
-    worksheet.set_column('C:C', 10.83)
+    worksheet.set_column('C:C', 22.6)
     worksheet.set_column('D:D', 9.33)
     worksheet.set_column('E:E', 1)
     worksheet.set_column('F:F', 24.5)
-    worksheet.set_column('G:G', 5 * 0.1317)
+    worksheet.set_column('G:G', 0.7)
     worksheet.set_column('H:H', 12.5)
     worksheet.set_column('I:I', 9.17)
-    worksheet.set_column('J:J', 54 * 0.1317)
+    worksheet.set_column('J:J', 7)
     worksheet.set_column('K:K', 8.5)
-    worksheet.set_column('L:L', 5 * 0.1317)
-    worksheet.set_column('M:M', 54 * 0.1317)
-    worksheet.set_column('N:N', 88 * 0.1317)
+    worksheet.set_column('L:L', 0.7)
+    worksheet.set_column('M:M', 7)
+    worksheet.set_column('N:N', 11.5)
 
 
     worksheet.write('A1', 'JOINT CLINICAL RESEARCH CENTER', brand_header)
@@ -219,40 +238,127 @@ class ReportGenerator():
     worksheet.write_row("H20:K20", ['MUTATIONS DETECTED AT ≥ 20%','','',''], psub_header)
     worksheet.write_row("M20:N20", ['MUTATIONS DETECTED AT < 20%',''], psub_header)
     rowNum = 21
+    ## NRTI
+    first_nrti = 0
+    first_nnrti = 0
+    first_pi = 0
+    first_in = 0
+    title = ""
+
     for resistance in self.profile['reverse_transcriptase']:
-      drugAbbrv = resistance[1]
       if resistance[0] == "NRTI":
-        drugName = ""
-        if drugAbbrv in self.drugDict:
-          drugName = self.drugDict[drugAbbrv]
+        if first_nrti == 0:
+          title = "NRTI"
         else:
-          drugName = drugAbbrv
-        res = ""
-        if resistance[3] == "Susceptible":
-          res = resistance[3]
+          title = ""
+        self.writeResistance(worksheet, resistance, rowNum, grey, green, title)
+        rowNum += 1
+        first_nrti += 1
+    for fixed in self.fixed['NRTI']:
+      # write out the fixed drugs with susceptible if not found
+      found = False
+      for res in self.profile['reverse_transcriptase']:
+        if res[1].upper() == fixed.upper():
+          found = True
+      if not found:
+        self.writeResistance(worksheet, ['NRTI', fixed, '', 'Susceptible', '', ''], rowNum, grey, green, title)
+        rowNum += 1
+        first_nrti += 1
+    ## NNRTI
+    rowNum += 1
+    for resistance in self.profile['reverse_transcriptase']:
+      if resistance[0] == "NNRTI":
+        if first_nnrti == 0:
+          title = "NNRTI"
         else:
-          res = resistance[3] + " " + resistance[4]
-        worksheet.write('A' + str(rowNum), '', green)
-        if rowNum % 2 == 0:
-           worksheet.write('B' + str(rowNum), drugAbbrv)
-           worksheet.write('C' + str(rowNum), drugName)
-           worksheet.write('F' + str(rowNum), res)
+          title = ""
+        self.writeResistance(worksheet, resistance, rowNum, grey, green, title)
+        rowNum += 1
+        first_nnrti += 1
+    for fixed in self.fixed['NNRTI']:
+      # write out the fixed drugs with susceptible if not found
+      found = False
+      for res in self.profile['reverse_transcriptase']:
+        if res[1].upper() == fixed.upper():
+          found = True
+      if not found:
+        self.writeResistance(worksheet, ['NNRTI', fixed, '', 'Susceptible', '', ''], rowNum, grey, green, title)
+        rowNum += 1
+        first_nnrti += 1
+    ## PI
+    rowNum += 1
+    for resistance in self.profile['protease']:
+      if resistance[0] == "PI":
+        if first_pi == 0:
+          title = "PI"
         else:
-          worksheet.write('B' + str(rowNum), drugAbbrv, gray)
-          worksheet.write('C' + str(rowNum), drugName, gray)
-          worksheet.write('F' + str(rowNum), res, gray)
-      rowNum += 1
-
-
-
+          title = ""
+        self.writeResistance(worksheet, resistance, rowNum, grey, blue, title)
+        rowNum += 1
+        first_pi += 1
+    for fixed in self.fixed['PI']:
+      # write out the fixed drugs with susceptible if not found
+      found = False
+      for res in self.profile['protease']:
+        if res[1].upper() == fixed.upper():
+          found = True
+      if not found:
+        self.writeResistance(worksheet, ['PI', fixed, '', 'Susceptible', '', ''], rowNum, grey, blue, title)
+        rowNum += 1
+        first_pi += 1
+    ## IN
+    rowNum += 1
+    for resistance in self.profile['integrase']:
+      if resistance[0] == "IN":
+        if first_in == 0:
+          title = "IN"
+        else:
+          title = ""
+        self.writeResistance(worksheet, resistance, rowNum, grey, red, title)
+        rowNum += 1
+        first_in += 1
+    for fixed in self.fixed['IN']:
+      # write out the fixed drugs with susceptible if not found
+      found = False
+      for res in self.profile['integrase']:
+        if res[1].upper() == fixed.upper():
+          found = True
+      if not found:
+        self.writeResistance(worksheet, ['IN', fixed, '', 'Susceptible', '', ''], rowNum, grey, red, title)
+        rowNum += 1
+        first_in += 1
 
     workbook.close()
 
+  def writeResistance(self, worksheet, resistance, rowNum, grey, green, title):
+    drugAbbrv = resistance[1]
+    resistanceClass = resistance[0]
+    drugName = ""
+    brandName = ""
+    if drugAbbrv in self.drugDict:
+      drugName = self.drugDict[drugAbbrv]
+    else:
+      drugName = drugAbbrv
 
+    if drugAbbrv in self.brandDict:
+      brandName = self.brandDict[drugAbbrv]
 
-
-
-
+    res = ""
+    if resistance[3] == "Susceptible":
+      res = resistance[3]
+    else:
+      res = resistance[3] + " " + resistance[4]
+    worksheet.write('A' + str(rowNum), title, green)
+    if rowNum % 2 == 0:
+       worksheet.write('B' + str(rowNum), drugAbbrv)
+       worksheet.write('C' + str(rowNum), drugName)
+       worksheet.write('D' + str(rowNum), brandName)
+       worksheet.write('F' + str(rowNum), res)
+    else:
+      worksheet.write('B' + str(rowNum), drugAbbrv, grey)
+      worksheet.write('C' + str(rowNum), drugName, grey)
+      worksheet.write('D' + str(rowNum), brandName, grey)
+      worksheet.write('F' + str(rowNum), res, grey)
 
 
 if __name__ == "__main__":
