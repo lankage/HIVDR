@@ -60,19 +60,21 @@ query = """
 #    ]
 
 def makeRequest(mutations):
+  muts = [item[0] for item in mutations]
+  freqs = {re.sub(r'\w+:','', d[0]): d[1] for d in mutations}
   resp = requests.post(
       'https://hivdb.stanford.edu/graphql',
       data=json.dumps({
           'query': query,
           'variables': {
-            "mutations": mutations
+            "mutations": muts
           }
       }),
       headers={
           'Content-Type': 'application/json'
       }
   )
-  return resp
+  return [resp, freqs]
 
 # convert the called mutations into the mutation string for API query
 def apiMutationString(row):
@@ -88,9 +90,9 @@ def apiMutationString(row):
     mutationString = "RT:69Insertion" # API generic name for T69dDNG
   else:
     mutationString = geneClassDict[mutation] + ':' + mutationBase + aachange
-  return mutationString
+  return [mutationString, frequency]
 
-def unpackResponse(json):
+def unpackResponse(json, freqs):
   outputLines = []
   for gene in json:
     outputLines.append("\n")
@@ -103,11 +105,15 @@ def unpackResponse(json):
 
       outputLines.append(drugClass + "  " + drugName + "   " + str(score) + "   " + text + "  ")
       if len(drugDef['partialScores']) > 0:
-        #print("(", end="")
         outputLines.append("(")
+      count = 0
       for score in drugDef['partialScores']:
-        outputLines.append(score['mutations'][0]['text'] + ':' + str(score['score']) + ",")
-        #print(score['mutations'][0]['text'], ':', score['score'], sep="", end=",")
+        if score['mutations'][0]['text'] == "T69Insertion":
+           frequency = freqs['69Insertion']
+        else:
+          frequency = freqs[score['mutations'][0]['text']]
+        outputLines.append(score['mutations'][0]['text'] + ':' + str(score['score']) + ':' + frequency + ",")
+        count += 1
       if len(drugDef['partialScores']) > 0:
         outputLines.append(")\n")
         #print(")")
@@ -121,13 +127,14 @@ mutationsDict = {}
 with open(args.file, 'r') as mutationsFile:
   for line in mutationsFile:
     lineparts = line.split()
-    mutString = apiMutationString(lineparts)
-    #print(mutString)
+    mutationData = apiMutationString(lineparts)
+    mutString = mutationData[0]
+    frequency = mutationData[1]
     barcode = lineparts[0]
     if not barcode in mutationsDict:
-      mutationsDict[barcode] = [mutString]
+      mutationsDict[barcode] = [[mutString, frequency]]
     else:
-      mutationsDict[barcode].append(mutString)
+      mutationsDict[barcode].append([mutString, frequency])
 
 errorBarcodes = []
 
@@ -136,9 +143,11 @@ for barcode in mutationsDict:
     outfile.write('barcode: ' + barcode)
     outfile.write("\n")
     if len(mutationsDict[barcode]) > 0:
-      response = makeRequest(mutationsDict[barcode])
+      req = makeRequest(mutationsDict[barcode])
+      response = req[0]
+      frequencies = req[1]
       if response.status_code == 200:
-        output = unpackResponse(response.json()['data']['viewer']['mutationsAnalysis']['drugResistance'])
+        output = unpackResponse(response.json()['data']['viewer']['mutationsAnalysis']['drugResistance'], frequencies)
         outfile.write(output)
       else:
         outfile.write("Error with query!")

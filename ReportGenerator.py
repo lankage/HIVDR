@@ -31,7 +31,7 @@ class ReportGenerator():
                       'IDV': "Crixivan\u00AE", 'LPV': "Kaletra\u00AE", 'NFV': "Viracept\u00AE", 'SQV': "Invirase\u00AE", 'TPV': "Aptivus\u00AE",
                       'RAL': "Isentress\u00AE", 'DTG': "Tivicay\u00AE",
                       'DDI': "Videx\u00AE", 'D4T': "Zerit\u00AE", 'LMV': "Epivir\u00AE",
-                      'DOR': "Pifeltro\u00AE"}
+                      'DOR': "Pifeltro\u00AE", 'EVG': "Vitekta\u00AE"}
     self.drugDict = {'3TC': 'Lamivudine', 'ABC': 'Abacavir', 'APV': 'Amprenavir',
                      'ATV': 'Atazanavir', 'BIC': 'Bictegravir', 'COBI': 'Cobicistat',
                      'd4T': 'Stavudine', 'ddI': 'Didanosine','DLV': 'Delavirdine',
@@ -80,6 +80,13 @@ class ReportGenerator():
       drugName = drugAbbrv
     return drugName
 
+  def frequencies(self, frequencyStr):
+    mutations = re.sub(r':\d+.?\d+:', '   ', frequencyStr)
+    mutations = re.sub(r'[()]', '', mutations)
+    mutations = re.sub(r',', ', ', mutations)
+    output = mutations[:-2]
+    return output
+
   def generatePDFReport(self):
     pdf = FPDF(orientation='P', unit='mm', format='A4')
     pdf.add_page()
@@ -89,12 +96,13 @@ class ReportGenerator():
     pdf.cell(200, 10, txt="GENOTYPIC HIV-1 RESISTANCE PROFILE", ln=1, align="C")
     pdf.cell(200, 10, txt=self.reportTitle, ln=1, align="C")
     pdf.set_font("Arial", size=10)
+    pdf.cell(25, 10, ln=2)
     pdf.cell(100, 10, txt="DRUG RESISTANCE INTERPRETATION", ln=1)
     pdf.set_font("Arial", style='B', size=9)
     pdf.cell(150, 10, txt="1) Resistance to Reverse transcriptase Inhibitors (RTI)", ln=1)
     pdf.set_font("Arial", style='B', size=8)
     pdf.cell(5, 5)
-    pdf.cell(150, 10, txt="Resistance to Nucleoside / Nucleotide RTI (NRTI)", ln=1)
+    pdf.cell(150, 10, txt="Resistance to Nucleoside / Nucleotide RTI (NRTI)                        Drug Resistance Associated Mutations", ln=1)
     pdf.set_font("Arial", size=8)
 
     for resistance in self.profile['reverse_transcriptase']:
@@ -112,7 +120,15 @@ class ReportGenerator():
           res = resistance[3] + " " + resistance[4]
         pdf.cell(5, 5)
         pdf.cell(50, 5, txt=drugName)
-        pdf.cell(50, 5, txt=res, ln=1)
+        pdf.cell(35, 5, txt=res)
+        if len(resistance) == 6:
+          freqString = self.frequencies(resistance[5])
+          pdf.set_font("Arial", size=6)
+          pdf.cell(25, 5, txt=freqString, ln=1)
+          pdf.set_font("Arial", size=8)
+        else:
+          pdf.cell(25, 5, txt="", ln=1)
+
     pdf.set_font("Arial", style='B', size=8)
     pdf.cell(5, 5)
     pdf.cell(150, 10, txt="Resistance to Non-Nucleoside RTI (NNRTI)", ln=1)
@@ -133,7 +149,14 @@ class ReportGenerator():
           res = resistance[3] + " " + resistance[4]
         pdf.cell(5, 5)
         pdf.cell(50, 5, txt=drugName)
-        pdf.cell(50, 5, txt=res, ln=1)
+        pdf.cell(35, 5, txt=res)
+        if len(resistance) == 6:
+          pdf.set_font("Arial", size=6)
+          freqString = self.frequencies(resistance[5])
+          pdf.cell(25, 5, txt=freqString, ln=1)
+          pdf.set_font("Arial", size=8)
+        else:
+          pdf.cell(25, 5, txt="", ln=1)
     if len(self.profile['reverse_transcriptase']) == 0:
       pdf.cell(5, 5)
       pdf.cell(50, 5, txt="Reverse transcriptase mutations not detected")
@@ -152,7 +175,14 @@ class ReportGenerator():
         res = resistance[3] + " " + resistance[4]
       pdf.cell(5, 5)
       pdf.cell(50, 5, txt=drugName)
-      pdf.cell(50, 5, txt=res, ln=1)
+      pdf.cell(35, 5, txt=res)
+      if len(resistance) == 6:
+        pdf.set_font("Arial", size=6)
+        freqString = self.frequencies(resistance[5])
+        pdf.cell(25, 5, txt=freqString, ln=1)
+        pdf.set_font("Arial", size=8)
+      else:
+        pdf.cell(25, 5, txt="", ln=1)
     if len(self.profile['protease']) == 0:
       pdf.cell(5, 5)
       pdf.cell(50, 5, txt="Protease mutations not detected")
@@ -173,7 +203,14 @@ class ReportGenerator():
         res = resistance[3] + " " + resistance[4]
       pdf.cell(5, 5)
       pdf.cell(50, 5, txt=drugName)
-      pdf.cell(50, 5, txt=res, ln=1)
+      pdf.cell(35, 5, txt=res)
+      if len(resistance) == 6:
+        pdf.set_font("Arial", size=6)
+        freqString = self.frequencies(resistance[5])
+        pdf.cell(25, 5, txt=freqString, ln=1)
+        pdf.set_font("Arial", size=8)
+      else:
+        pdf.cell(25, 5, txt="", ln=1)
     pdf.cell(10, 10, txt="", ln=1)
     pdf.output("pdfs/" + self.barcode + ".pdf")
 
@@ -185,6 +222,8 @@ class ReportGenerator():
     report = workbook.add_format({'font_color': 'red', 'bold': True})
     metadata_header = workbook.add_format({'bg_color': '#F1C096', 'bold': True})
     green = workbook.add_format({'bg_color': '#397d22', 'font_color': '#FFFFFF'})
+    call_color = workbook.add_format({'font_color': 'green', 'bold': True})
+    call_color_grey = workbook.add_format({'font_color': 'green', 'bold': True, 'bg_color': '#c9d2d6'})
     grey = workbook.add_format({'bg_color': '#c9d2d6'})
     blue = workbook.add_format({'bg_color': '#2e0cb3', 'font_color': '#FFFFFF'})
     red = workbook.add_format({'bg_color': '#8f1507', 'font_color': '#FFFFFF'})
@@ -206,7 +245,6 @@ class ReportGenerator():
     worksheet.set_column('L:L', 0.7)
     worksheet.set_column('M:M', 7)
     worksheet.set_column('N:N', 11.5)
-
 
     worksheet.write('A1', 'JOINT CLINICAL RESEARCH CENTER', brand_header)
     worksheet.write('A2', 'CWRU/CFAR LABORATORY', brand_header)
@@ -236,7 +274,7 @@ class ReportGenerator():
     worksheet.write('D20', 'Brand Name', psub_header)
     worksheet.write('F20', 'Assessment', psub_header)
     worksheet.write_row("H20:K20", ['MUTATIONS DETECTED AT ≥ 20%','','',''], psub_header)
-    worksheet.write_row("M20:N20", ['MUTATIONS DETECTED AT < 20%',''], psub_header)
+    #worksheet.write_row("M20:N20", ['MUTATIONS DETECTED AT < 20%',''], psub_header)
     rowNum = 21
     ## NRTI
     first_nrti = 0
@@ -251,17 +289,21 @@ class ReportGenerator():
           title = "NRTI"
         else:
           title = ""
-        self.writeResistance(worksheet, resistance, rowNum, grey, green, title)
+        self.writeResistance(worksheet, resistance, rowNum, grey, green, title, call_color, call_color_grey)
         rowNum += 1
         first_nrti += 1
     for fixed in self.fixed['NRTI']:
       # write out the fixed drugs with susceptible if not found
       found = False
+      if first_nrti == 0:
+        title = "NRTI"
+      else:
+        title = ""
       for res in self.profile['reverse_transcriptase']:
         if res[1].upper() == fixed.upper():
           found = True
       if not found:
-        self.writeResistance(worksheet, ['NRTI', fixed, '', 'Susceptible', '', ''], rowNum, grey, green, title)
+        self.writeResistance(worksheet, ['NRTI', fixed, '', 'Susceptible', '', ''], rowNum, grey, green, title, call_color, call_color_grey)
         rowNum += 1
         first_nrti += 1
     ## NNRTI
@@ -272,17 +314,21 @@ class ReportGenerator():
           title = "NNRTI"
         else:
           title = ""
-        self.writeResistance(worksheet, resistance, rowNum, grey, green, title)
+        self.writeResistance(worksheet, resistance, rowNum, grey, green, title, call_color, call_color_grey)
         rowNum += 1
         first_nnrti += 1
     for fixed in self.fixed['NNRTI']:
       # write out the fixed drugs with susceptible if not found
       found = False
+      if first_nnrti == 0:
+        title = "NNRTI"
+      else:
+        title = ""
       for res in self.profile['reverse_transcriptase']:
         if res[1].upper() == fixed.upper():
           found = True
       if not found:
-        self.writeResistance(worksheet, ['NNRTI', fixed, '', 'Susceptible', '', ''], rowNum, grey, green, title)
+        self.writeResistance(worksheet, ['NNRTI', fixed, '', 'Susceptible', '', ''], rowNum, grey, green, title, call_color, call_color_grey)
         rowNum += 1
         first_nnrti += 1
     ## PI
@@ -293,17 +339,21 @@ class ReportGenerator():
           title = "PI"
         else:
           title = ""
-        self.writeResistance(worksheet, resistance, rowNum, grey, blue, title)
+        self.writeResistance(worksheet, resistance, rowNum, grey, blue, title, call_color, call_color_grey)
         rowNum += 1
         first_pi += 1
     for fixed in self.fixed['PI']:
       # write out the fixed drugs with susceptible if not found
       found = False
+      if first_pi == 0:
+        title = "PI"
+      else:
+        title = ""
       for res in self.profile['protease']:
         if res[1].upper() == fixed.upper():
           found = True
       if not found:
-        self.writeResistance(worksheet, ['PI', fixed, '', 'Susceptible', '', ''], rowNum, grey, blue, title)
+        self.writeResistance(worksheet, ['PI', fixed, '', 'Susceptible', '', ''], rowNum, grey, blue, title, call_color, call_color_grey)
         rowNum += 1
         first_pi += 1
     ## IN
@@ -314,23 +364,27 @@ class ReportGenerator():
           title = "IN"
         else:
           title = ""
-        self.writeResistance(worksheet, resistance, rowNum, grey, red, title)
+        self.writeResistance(worksheet, resistance, rowNum, grey, red, title, call_color, call_color_grey)
         rowNum += 1
         first_in += 1
     for fixed in self.fixed['IN']:
       # write out the fixed drugs with susceptible if not found
       found = False
+      if first_in == 0:
+        title = "IN"
+      else:
+        title = ""
       for res in self.profile['integrase']:
         if res[1].upper() == fixed.upper():
           found = True
       if not found:
-        self.writeResistance(worksheet, ['IN', fixed, '', 'Susceptible', '', ''], rowNum, grey, red, title)
+        self.writeResistance(worksheet, ['IN', fixed, '', 'Susceptible', '', ''], rowNum, grey, red, title, call_color, call_color_grey)
         rowNum += 1
         first_in += 1
 
     workbook.close()
 
-  def writeResistance(self, worksheet, resistance, rowNum, grey, green, title):
+  def writeResistance(self, worksheet, resistance, rowNum, grey, green, title, call_color, call_color_grey):
     drugAbbrv = resistance[1]
     resistanceClass = resistance[0]
     drugName = ""
@@ -344,27 +398,35 @@ class ReportGenerator():
       brandName = self.brandDict[drugAbbrv]
 
     res = ""
+    mutations = ""
     if resistance[3] == "Susceptible":
       res = resistance[3]
     else:
       res = resistance[3] + " " + resistance[4]
+    if len(resistance) == 6:
+      mutations = re.sub(r':\d+.?\d+:', '   ', resistance[5])
+      mutations = re.sub(r'[()]', '', mutations)
+      mutations = re.sub(r',', ', ', mutations)
+      mutations = re.sub(r',$', '', mutations)
+
     worksheet.write('A' + str(rowNum), title, green)
     if rowNum % 2 == 0:
        worksheet.write('B' + str(rowNum), drugAbbrv)
        worksheet.write('C' + str(rowNum), drugName)
        worksheet.write('D' + str(rowNum), brandName)
-       worksheet.write('F' + str(rowNum), res)
+       worksheet.write('F' + str(rowNum), res, call_color)
+       worksheet.write('H' + str(rowNum), mutations)
     else:
       worksheet.write('B' + str(rowNum), drugAbbrv, grey)
       worksheet.write('C' + str(rowNum), drugName, grey)
       worksheet.write('D' + str(rowNum), brandName, grey)
-      worksheet.write('F' + str(rowNum), res, grey)
-
+      worksheet.write('F' + str(rowNum), res, call_color_grey)
+      worksheet.write('H' + str(rowNum), mutations, grey)
 
 if __name__ == "__main__":
   reporter = ReportGenerator('SAMPLE1', 'output/CGAGGCTG+TCTCTCCG_scores.txt')
   reporter.parseFile(reporter.profileFile)
-  #reporter.generatePDFReport()
+  reporter.generatePDFReport()
   reporter.generateExcelReport()
   #print(reporter.profile)
 

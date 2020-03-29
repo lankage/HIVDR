@@ -1,0 +1,3 @@
+barcode: CGAGGCTG+TCTCTCCG
+Error with query!
+barcodes with errors:CGAGGCTG+TCTCTCCG
